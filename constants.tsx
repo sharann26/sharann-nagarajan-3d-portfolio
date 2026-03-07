@@ -204,11 +204,9 @@ export const PROJECTS: Project[] = [
     icon: "WEB",
     tags: [
       { name: "React", color: "text-blue-500" },
-      { name: "Three.js", color: "text-white dark:text-slate-200" },
+      { name: "Three.js", color: "text-pink-400" },
       { name: "Tailwind", color: "text-cyan-400" },
     ],
-    image:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1000&auto=format&fit=crop",
   },
   {
     title: "Navigator - United Airlines",
@@ -217,11 +215,9 @@ export const PROJECTS: Project[] = [
     icon: "WEB",
     tags: [
       { name: "Angular", color: "text-blue-500" },
-      { name: "TypeScript", color: "text-white dark:text-slate-200" },
+      { name: "TypeScript", color: "text-pink-400" },
       { name: "CSS", color: "text-cyan-400" },
     ],
-    image:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop",
   },
   {
     title: "TOPS - Capital Groups",
@@ -230,11 +226,9 @@ export const PROJECTS: Project[] = [
     icon: "WEB",
     tags: [
       { name: "Angular", color: "text-blue-500" },
-      { name: "TypeScript", color: "text-white dark:text-slate-200" },
+      { name: "TypeScript", color: "text-pink-400" },
       { name: "SASS", color: "text-cyan-400" },
     ],
-    image:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1000&auto=format&fit=crop",
   },
   {
     title: "SmartApp Builder",
@@ -243,13 +237,11 @@ export const PROJECTS: Project[] = [
     icon: "BOTH",
     tags: [
       { name: "Angular", color: "text-blue-500" },
-      { name: "TypeScript", color: "text-white dark:text-slate-200" },
+      { name: "TypeScript", color: "text-pink-400" },
       { name: "SASS", color: "text-cyan-400" },
       { name: "CouchDB", color: "text-cyan-400" },
       { name: "Postgres", color: "text-cyan-400" },
     ],
-    image:
-      "https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=1000&auto=format&fit=crop",
   },
   {
     title: "Hatsun Service Ticket",
@@ -258,14 +250,12 @@ export const PROJECTS: Project[] = [
     icon: "MOBILE",
     tags: [
       { name: "Ionic", color: "text-blue-500" },
-      { name: "TypeScript", color: "text-white dark:text-slate-200" },
+      { name: "TypeScript", color: "text-pink-400" },
       { name: "SASS", color: "text-cyan-400" },
       { name: "Angular", color: "text-blue-500" },
       { name: "NodeJs", color: "text-cyan-400" },
       { name: "MySQL", color: "text-cyan-400" },
     ],
-    image:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1000&auto=format&fit=crop",
   },
   {
     title: "Alliance insurance",
@@ -274,11 +264,9 @@ export const PROJECTS: Project[] = [
     icon: "WEB",
     tags: [
       { name: "Angular", color: "text-blue-500" },
-      { name: "TypeScript", color: "text-white dark:text-slate-200" },
+      { name: "TypeScript", color: "text-pink-400" },
       { name: "CSS", color: "text-cyan-400" },
     ],
-    image:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1000&auto=format&fit=crop",
   },
   {
     title: "Tata AIG general",
@@ -287,10 +275,8 @@ export const PROJECTS: Project[] = [
     icon: "WEB",
     tags: [
       { name: "Angular", color: "text-blue-500" },
-      { name: "TypeScript", color: "text-white dark:text-slate-200" },
+      { name: "TypeScript", color: "text-pink-400" },
       { name: "CSS", color: "text-cyan-400" },
     ],
-    image:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1000&auto=format&fit=crop",
   },
 ];

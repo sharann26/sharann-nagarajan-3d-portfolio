@@ -71,7 +71,7 @@ const AvatarCanvas: React.FC<AvatarCanvasProps> = ({ theme }) => {
             z: -50,
             opacity: 0.6,
           }}
-          className={`absolute -inset-10 rounded-full blur-[80px] transition-colors duration-1000 ${theme === "dark" ? "bg-violet-600/40" : "bg-blue-400/40"}`}
+          className={`absolute -inset-10 rounded-full blur-[80px] transition-colors duration-1000 ${theme === "dark" ? "bg-emerald-600/40" : "bg-blue-400/40"}`}
         />
 
         {/* 2. Main Card Container */}
@@ -88,7 +88,7 @@ const AvatarCanvas: React.FC<AvatarCanvasProps> = ({ theme }) => {
 
             {/* Tech Overlay Gradient */}
             <div
-              className={`absolute inset-0 mix-blend-overlay opacity-30 bg-gradient-to-t ${theme === "dark" ? "from-violet-900 via-transparent to-teal-500" : "from-blue-900 via-transparent to-orange-400"}`}
+              className={`absolute inset-0 mix-blend-overlay opacity-30 bg-gradient-to-t ${theme === "dark" ? "from-emerald-900 via-transparent to-teal-500" : "from-blue-900 via-transparent to-orange-400"}`}
             />
             <div className="absolute inset-0 bg-black/10" />
           </div>

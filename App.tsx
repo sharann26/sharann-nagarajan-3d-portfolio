@@ -8,7 +8,7 @@ import {
   Variants,
 } from "framer-motion";
 import { ArrowUp, Linkedin, Mail, MessageCircle, Phone } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AvatarCanvas from "./components/AvatarCanvas";
 import Certifications from "./components/Certifications";
 import ChatBot from "./components/ChatBot";
@@ -50,15 +50,6 @@ const App: React.FC = () => {
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -800]);
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.3]);
 
-  // About Section Parallax
-  const aboutRef = useRef<HTMLElement>(null);
-  const { scrollYProgress: aboutScrollProgress } = useScroll({
-    target: aboutRef,
-    offset: ["start end", "end start"],
-  });
-
-  const aboutContentY = useTransform(aboutScrollProgress, [0, 1], [50, -50]);
-
   useEffect(() => {
     const updateHeader = () => {
       setIsScrolled(window.scrollY > 20);
@@ -99,55 +90,13 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    // Calculate normalized mouse position from center (-0.5 to 0.5)
-    const mouseXPos = (e.clientX - rect.left) / width - 0.5;
-    const mouseYPos = (e.clientY - rect.top) / height - 0.5;
-
-    x.set(mouseXPos);
-    y.set(mouseYPos);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
   const navLinks = [
-    { name: "About", id: "about" },
+    { name: "Stats", id: "stats" },
     { name: "Experience", id: "experience" },
     { name: "Skills", id: "skills" },
     { name: "Projects", id: "projects" },
     { name: "Certifications", id: "certifications" },
   ];
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 25, scale: 0.98 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-      },
-    },
-  };
 
   const sectionVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
@@ -163,17 +112,17 @@ const App: React.FC = () => {
 
   return (
     <div
-      className={`relative min-h-screen selection:bg-violet-500 selection:text-white transition-colors duration-1000 ${theme === "light" ? "text-slate-950" : "text-white"}`}
+      className={`relative min-h-screen selection:bg-emerald-500 selection:text-white transition-colors duration-1000 ${theme === "light" ? "text-slate-950" : "text-white"}`}
     >
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-600 z-[100] origin-left"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-600 via-fuchsia-500 to-indigo-600 z-[100] origin-left"
         style={{ scaleX }}
       />
 
       <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
         <motion.div
           style={{ y: y1, opacity }}
-          className={`absolute top-[5%] right-[5%] w-[50vw] h-[50vw] rounded-full blur-[120px] transition-colors duration-1000 ${theme === "dark" ? "bg-violet-600/10" : "bg-blue-300/30"}`}
+          className={`absolute top-[5%] right-[5%] w-[50vw] h-[50vw] rounded-full blur-[120px] transition-colors duration-1000 ${theme === "dark" ? "bg-emerald-600/10" : "bg-blue-300/30"}`}
         />
         <motion.div
           style={{ y: y2, opacity }}
@@ -197,7 +146,7 @@ const App: React.FC = () => {
             onClick={scrollToTop}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="text-lg sm:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-500 to-fuchsia-500 cursor-pointer select-none shrink-0"
+            className="text-lg sm:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-green-500 cursor-pointer select-none shrink-0"
           >
             SN.
           </motion.button>
@@ -220,11 +169,11 @@ const App: React.FC = () => {
                   <button
                     key={link.id}
                     onClick={() => scrollToSection(link.id)}
-                    className="hover:text-violet-500 transition-all cursor-pointer py-2 relative group flex-shrink-0"
+                    className="hover:text-emerald-500 transition-all cursor-pointer py-2 relative group flex-shrink-0"
                   >
                     {link.name}
                     <motion.span
-                      className="absolute bottom-1 left-0 w-0 h-0.5 bg-violet-500 rounded-full"
+                      className="absolute bottom-1 left-0 w-0 h-0.5 bg-emerald-500 rounded-full"
                       whileHover={{ width: "100%" }}
                     />
                   </button>
@@ -239,7 +188,7 @@ const App: React.FC = () => {
             <a
               href={`https://wa.me/${CONTACT_INFO.whatsapp.replace("+", "")}`}
               target="_blank"
-              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:shadow-lg hover:shadow-violet-600/30 transition-all active:scale-95"
+              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white bg-gradient-to-r from-emerald-600 to-indigo-600 hover:shadow-lg hover:shadow-emerald-600/30 transition-all active:scale-95"
             >
               Hire me
             </a>
@@ -261,12 +210,12 @@ const App: React.FC = () => {
             }}
             className="z-10 text-center md:text-left"
           >
-            <p className="text-violet-600 font-black tracking-[0.3em] uppercase mb-4 text-sm md:text-base">
+            <p className="text-emerald-600 font-black tracking-[0.3em] uppercase mb-4 text-sm md:text-base">
               Software Engineer
             </p>
             <h1 className="text-5xl md:text-6xl lg:text-8xl font-black mb-6 leading-[1.1]">
               Sharann <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-500">
                 Nagarajan
               </span>
             </h1>
@@ -280,7 +229,7 @@ const App: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 mb-10">
               <a
                 href={`tel:${CONTACT_INFO.phone}`}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-2xl shadow-xl shadow-violet-600/30 transition-all active:scale-95"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-xl shadow-emerald-600/30 transition-all active:scale-95"
               >
                 <Phone size={18} /> Call Me
               </a>
@@ -306,7 +255,7 @@ const App: React.FC = () => {
                   href={social.href}
                   target="_blank"
                   whileHover={{ y: -5, scale: 1.1 }}
-                  className={`p-4 rounded-2xl shadow-xl transition-all border ${theme === "dark" ? "bg-slate-800 border-slate-700 hover:text-violet-500" : "bg-white border-slate-300 hover:bg-slate-50 text-slate-700 hover:text-violet-600"}`}
+                  className={`p-4 rounded-2xl shadow-xl transition-all border ${theme === "dark" ? "bg-slate-800 border-slate-700 hover:text-emerald-500" : "bg-white border-slate-300 hover:bg-slate-50 text-slate-700 hover:text-emerald-600"}`}
                 >
                   {social.icon}
                 </motion.a>
@@ -329,52 +278,14 @@ const App: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <Stats />
-
-      {/* About Section */}
       <motion.section
-        id="about"
-        ref={aboutRef}
-        variants={containerVariants}
+        id="stats"
+        variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className="py-24 px-6 max-w-5xl mx-auto scroll-mt-24"
       >
-        <motion.div
-          variants={itemVariants}
-          className={`relative p-10 md:p-20 backdrop-blur-3xl rounded-[48px] border shadow-2xl overflow-hidden group transition-all duration-1000 ${theme === "dark" ? "bg-slate-900/40 border-white/10" : "bg-white/95 border-slate-300 shadow-slate-200/60"}`}
-        >
-          <div
-            className={`absolute -top-10 -right-10 w-48 h-48 blur-[80px] group-hover:opacity-60 transition-all duration-1000 ${theme === "dark" ? "bg-violet-600/20" : "bg-blue-400/20"}`}
-          />
-
-          <motion.div style={{ y: aboutContentY }}>
-            <motion.h2
-              variants={itemVariants}
-              className="text-3xl md:text-4xl font-black mb-10 flex items-center gap-6"
-            >
-              <span className="w-16 h-1.5 bg-violet-600 rounded-full inline-block" />
-              Core Philosophy
-            </motion.h2>
-            <div
-              className={`text-lg md:text-2xl leading-relaxed space-y-8 font-medium transition-colors ${theme === "dark" ? "text-slate-300" : "text-slate-800"}`}
-            >
-              <motion.p variants={itemVariants}>
-                Engineering is more than just writing code; it's about{" "}
-                <span className="text-violet-600 font-bold">
-                  crafting digital environments
-                </span>{" "}
-                that feel intuitive and alive.
-              </motion.p>
-              <motion.p variants={itemVariants}>
-                I bridge the gap between heavy-lifting backend data and high-end
-                visual storytelling. My goal is zero lag, maximum impact, and an
-                unwavering commitment to quality.
-              </motion.p>
-            </div>
-          </motion.div>
-        </motion.div>
+        <Stats theme={theme} />
       </motion.section>
 
       {/* Experience Section */}
@@ -384,9 +295,9 @@ const App: React.FC = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className={`py-10 rounded-[64px] mx-4 transition-colors duration-1000 scroll-mt-24 ${theme === "dark" ? "bg-slate-900/10" : "bg-white/80 border border-slate-300 shadow-xl"}`}
+        className={`py-10 rounded-[64px] mx-4 transition-colors duration-1000 scroll-mt-24 ${theme === "dark" ? "bg-slate-900/10" : ""}`}
       >
-        <ExperienceTimeline />
+        <ExperienceTimeline theme={theme} />
       </motion.section>
 
       {/* Skills Section */}
@@ -398,7 +309,7 @@ const App: React.FC = () => {
         viewport={{ once: true, margin: "-100px" }}
         className="scroll-mt-24"
       >
-        <Skills />
+        <Skills theme={theme} />
       </motion.section>
 
       {/* Projects Section */}
@@ -410,7 +321,7 @@ const App: React.FC = () => {
         viewport={{ once: true, margin: "-100px" }}
         className="scroll-mt-24"
       >
-        <Projects />
+        <Projects theme={theme} />
       </motion.section>
 
       {/* Certifications Section */}
@@ -422,7 +333,7 @@ const App: React.FC = () => {
         viewport={{ once: true, margin: "-100px" }}
         className="scroll-mt-24"
       >
-        <Certifications />
+        <Certifications theme={theme} />
       </motion.section>
 
       {/* Footer */}
@@ -432,11 +343,13 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
             <h2
-              className={`text-3xl font-black mb-2 ${theme === "dark" ? "text-white" : "text-slate-950"}`}
+              className={`text-3xl font-black mb-2 ${theme === "dark" ? "text-slate-200" : "text-slate-950"}`}
             >
               Sharann Nagarajan
             </h2>
-            <p className="text-slate-700 dark:text-slate-500 font-medium text-sm tracking-wide">
+            <p
+              className={`${theme === "dark" ? "text-slate-200" : "text-slate-700"} font-medium text-sm tracking-wide`}
+            >
               Software Engineer.
             </p>
           </div>
@@ -444,24 +357,26 @@ const App: React.FC = () => {
             <a
               href={CONTACT_INFO.linkedin}
               target="_blank"
-              className="text-slate-600 dark:text-slate-400 hover:text-violet-500 transition-colors font-bold uppercase tracking-widest text-[10px]"
+              className={`${theme === "dark" ? "text-slate-200" : "text-slate-600"} hover:text-emerald-500 transition-colors font-bold uppercase tracking-widest text-[10px]`}
             >
               LinkedIn
             </a>
             <a
               href={`mailto:${CONTACT_INFO.email}`}
-              className="text-slate-600 dark:text-slate-400 hover:text-violet-500 transition-colors font-bold uppercase tracking-widest text-[10px]"
+              className={`${theme === "dark" ? "text-slate-200" : "text-slate-600"} hover:text-emerald-500 transition-colors font-bold uppercase tracking-widest text-[10px]`}
             >
               Email
             </a>
           </div>
         </div>
-        <div className="mt-20 pt-10 border-t border-slate-300 dark:border-white/5 text-slate-500 text-[10px] tracking-[0.3em] text-center">
+        <div
+          className={`mt-20 pt-10 border-t  ${theme === "dark" ? "border-white/5" : "border-black/5"} text-slate-500 text-[10px] tracking-[0.3em] text-center`}
+        >
           <p>© 2024 SHARANN NAGARAJAN • BUILT WITH PASSION</p>
         </div>
       </footer>
 
-      <ChatBot />
+      <ChatBot theme={theme} />
 
       {/* Scroll to Top */}
       <AnimatePresence>
@@ -471,7 +386,7 @@ const App: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.5, y: 20 }}
             onClick={scrollToTop}
-            className={`fixed bottom-8 right-${CHATBOT_ENABLED ? "24" : "8"} p-4 rounded-2xl bg-violet-600 text-white shadow-2xl z-[90] hover:bg-violet-700 active:scale-95 transition-all`}
+            className={`fixed bottom-8 right-${CHATBOT_ENABLED ? "24" : "8"} p-4 rounded-2xl bg-emerald-600 text-white shadow-2xl z-[90] hover:bg-emerald-700 active:scale-95 transition-all`}
           >
             <ArrowUp size={24} />
           </motion.button>

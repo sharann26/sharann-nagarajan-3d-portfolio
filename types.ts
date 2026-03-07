@@ -33,5 +33,4 @@ export interface Project {
   description: string;
   icon: "MOBILE" | "WEB" | "BOTH";
   tags: { name: string; color: string }[];
-  image: string;
 }
