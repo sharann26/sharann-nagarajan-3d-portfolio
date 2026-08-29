@@ -51,7 +51,7 @@ const Skills: React.FC<{ theme: "dark" | "light" }> = ({ theme }) => {
                   className={`group relative flex items-center justify-center p-3 ${theme === "dark" ? "bg-slate-800 border border-slate-700 hover:border-emerald-500/50" : "bg-white border border-slate-200 hover:border-emerald-300"} rounded-xl shadow-sm hover:shadow-emerald-500/20 transition-all duration-300`}
                 >
                   <img
-                    src={skill.icon}
+                    src={`${theme === "dark" ? skill.icon_dark || skill.icon : skill.icon}`}
                     alt={skill.name}
                     className="w-8 h-8 object-contain"
                     title={skill.name}

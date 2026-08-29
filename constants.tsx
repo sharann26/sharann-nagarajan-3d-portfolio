@@ -11,7 +11,7 @@ export const CHATBOT_ENABLED: boolean = false; // To Display chatbot or not (Set
 // Define your career start date (Year, Month Index (0-11), Day)
 const START_DATE = new Date(2018, 4, 17); // May 17, 2018
 
-const calculateExperience = (startDateStr): string => {
+const calculateExperience = (startDateStr: Date): string => {
   const start = new Date(startDateStr);
   const today = new Date();
 
@@ -146,6 +146,16 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
         name: "Power BI",
         icon: "https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg",
       },
+      {
+        name: "Claude",
+        icon: "https://static.cdnlogo.com/logos/c/63/claude-ai.svg",
+      },
+      {
+        name: "GitHub Copilot",
+        icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/github-copilot/light.svg",
+        icon_dark:
+          "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/github-copilot/dark.svg",
+      },
     ],
   },
 ];
@@ -165,7 +175,31 @@ export const CERTIFICATIONS: Certification[] = [
     date: "2026",
     description:
       "Deep dive into hooks, patterns, and high-performance frontend architecture.",
-    color: "from-blue-400 to-cyan-500",
+    color: "from-blue-400 to-emerald-500",
+  },
+  {
+    title: "Claude Certified Developer Foundations",
+    issuer: "Anthropic",
+    date: "2026",
+    description:
+      "Validates building, integrating, and shipping AI applications and agents using Anthropic's ecosystem.",
+    color: "from-red-400 to-stone-500",
+  },
+  {
+    title: "Claude Certified Architect - Professional",
+    issuer: "Anthropic",
+    date: "2026",
+    description:
+      "Validates designing, leading, and optimizing enterprise-scale AI deployments with proper governance.",
+    color: "from-pink-400 to-indigo-500",
+  },
+  {
+    title: "Claude Certified Architect Foundations",
+    issuer: "Anthropic",
+    date: "2026",
+    description:
+      "Validates designing and building production-grade AI applications using Anthropic's developer toolkit.",
+    color: "from-green-400 to-yellow-500",
   },
 ];
 
@@ -178,13 +212,13 @@ export const STATS: Stat[] = [
   },
   {
     label: "Projects Completed",
-    value: "12+",
+    value: "14+",
     icon: FolderGit2,
     color: "text-violet-500",
   },
   {
     label: "Happy Clients",
-    value: "5+",
+    value: "7+",
     icon: SmilePlus,
     color: "text-fuchsia-500",
   },

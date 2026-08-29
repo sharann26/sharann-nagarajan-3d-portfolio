@@ -94,7 +94,8 @@ const ChatBot: React.FC<{ theme: "dark" | "light" }> = ({ theme }) => {
       const result = await chatSessionRef.current.sendMessage({
         message: userMessage,
       });
-      const responseText = result.text;
+      const responseText =
+        result.text ?? "I couldn't generate a response right now.";
 
       setMessages((prev) => [...prev, { role: "model", text: responseText }]);
     } catch (error) {

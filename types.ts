@@ -10,7 +10,7 @@ export interface Experience {
 
 export interface SkillCategory {
   title: string;
-  skills: { name: string; icon: string }[];
+  skills: { name: string; icon: string; icon_dark?: string }[];
 }
 
 export interface Certification {
