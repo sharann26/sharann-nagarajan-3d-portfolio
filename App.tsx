@@ -1,410 +1,223 @@
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useScroll,
-  useSpring,
-  useTransform,
-  Variants,
-} from "framer-motion";
-import { ArrowUp, Linkedin, Mail, MessageCircle, Phone } from "lucide-react";
+import { motion, useScroll, useSpring } from "framer-motion";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import AvatarCanvas from "./components/AvatarCanvas";
 import Certifications from "./components/Certifications";
 import ChatBot from "./components/ChatBot";
+import ContactBanner from "./components/ContactBanner";
 import ExperienceTimeline from "./components/ExperienceTimeline";
+import Hero from "./components/Hero";
+import Marquee from "./components/Marquee";
 import Projects from "./components/Projects";
 import Skills from "./components/Skills";
 import Stats from "./components/Stats";
 import ThemeToggle from "./components/ThemeToggle";
-import { CHATBOT_ENABLED, CONTACT_INFO } from "./constants";
+import { Backdrop } from "./components/ui/Backdrop";
+import { Tile } from "./components/ui/Tile";
+import { CHATBOT_ENABLED, CONTACT_INFO, STATS } from "./constants";
+
+type Theme = "dark" | "light";
+
+// ids follow code.md
+const NAV = [
+  { name: "STATS", id: "telemetry" },
+  { name: "EXPERIENCE", id: "experience" },
+  { name: "PROJECTS", id: "projects" },
+  { name: "SKILLS", id: "stack" },
+  { name: "CERTIFICATES", id: "credentials" },
+  { name: "CONTACT", id: "contact" },
+];
 
 const App: React.FC = () => {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { scrollY, scrollYProgress } = useScroll();
+  // default: LAB (dark). A visitor's choice is remembered; storage can throw, so it is guarded.
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      return localStorage.getItem("theme") === "light" ? "light" : "dark";
+    } catch {
+      return "dark";
+    }
+  });
+  const [showTop, setShowTop] = useState(false);
+  const [active, setActive] = useState("");
 
-  // Motion values for 3D Tilt Effect
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  // Smooth out the mouse movement
-  const mouseX = useSpring(x, { stiffness: 150, damping: 15 });
-  const mouseY = useSpring(y, { stiffness: 150, damping: 15 });
-
-  // Map mouse position to rotation degrees
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [15, -15]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-15, 15]);
-
-  // Dynamic glare position
-  const glareX = useTransform(mouseX, [-0.5, 0.5], [0, 100]);
-  const glareY = useTransform(mouseY, [-0.5, 0.5], [0, 100]);
-
+  // MotionValue-driven progress bar: no React re-render on scroll.
+  const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
+    stiffness: 120,
     damping: 30,
     restDelta: 0.001,
   });
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -400]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -800]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.3]);
-
   useEffect(() => {
-    const updateHeader = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", updateHeader);
-
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-      document.body.style.backgroundColor = "#050816";
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.body.style.backgroundColor = "#f8fafc";
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    try {
+      localStorage.setItem("theme", theme);
+    } catch {
+      /* private mode: theme still works for this visit */
     }
-
-    return () => window.removeEventListener("scroll", updateHeader);
   }, [theme]);
 
-  const toggleTheme = () =>
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      setShowTop(window.scrollY > 400);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 100;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (es) => es.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: "-40% 0px -55% 0px" },
+    );
+    NAV.forEach((n) => {
+      const el = document.getElementById(n.id);
+      if (el) io.observe(el);
+    });
+    return () => io.disconnect();
+  }, []);
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-  };
+  const toggleTheme = () => setTheme((p) => (p === "dark" ? "light" : "dark"));
+  const go = (id: string) =>
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const years = STATS[0]?.value ?? "";
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const navLinks = [
-    { name: "Stats", id: "stats" },
-    { name: "Experience", id: "experience" },
-    { name: "Skills", id: "skills" },
-    { name: "Projects", id: "projects" },
-    { name: "Certifications", id: "certifications" },
-  ];
-
-  const sectionVariants: Variants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-      },
-    },
-  };
+  const navLink = (n: { name: string; id: string }) => (
+    <a
+      key={n.id}
+      href={`#${n.id}`}
+      onClick={(e) => {
+        e.preventDefault();
+        go(n.id);
+      }}
+      className={`shrink-0 border px-3 py-1.5 font-mono text-xs transition-all hover:border-line2 hover:bg-low hover:text-g ${active === n.id ? "border-line2 bg-low text-g" : "border-transparent text-soft"}`}
+    >
+      {n.name}
+    </a>
+  );
 
   return (
-    <div
-      className={`relative min-h-screen selection:bg-emerald-500 selection:text-white transition-colors duration-1000 ${theme === "light" ? "text-slate-950" : "text-white"}`}
-    >
+    <div className="relative min-h-screen overflow-x-clip bg-transparent text-txt">
+      <Backdrop />
+
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-600 via-fuchsia-500 to-indigo-600 z-[100] origin-left"
+        className="fixed left-0 right-0 top-0 z-[100] h-[3px] origin-left bg-g"
         style={{ scaleX }}
       />
 
-      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <motion.div
-          style={{ y: y1, opacity }}
-          className={`absolute top-[5%] right-[5%] w-[50vw] h-[50vw] rounded-full blur-[120px] transition-colors duration-1000 ${theme === "dark" ? "bg-emerald-600/10" : "bg-blue-300/30"}`}
-        />
-        <motion.div
-          style={{ y: y2, opacity }}
-          className={`absolute bottom-[5%] left-[5%] w-[45vw] h-[45vw] rounded-full blur-[140px] transition-colors duration-1000 ${theme === "dark" ? "bg-fuchsia-600/10" : "bg-indigo-300/30"}`}
-        />
+      {/* status strip */}
+      <div className="relative z-50 flex w-full items-center justify-between border-b border-line bg-surf px-4 py-1 font-mono text-[10px] text-mute">
+        <div className="flex items-center gap-3">
+          <span className="font-bold text-g">STATUS: ONLINE</span>
+          <span>//</span>
+          <span>LOC: CHENNAI, IN</span>
+        </div>
+        <span className="font-bold text-a">[EXP: {years} YRS]</span>
       </div>
 
-      {/* Optimized Glassmorphism Header */}
-      <div
-        className={`fixed top-0 left-0 right-0 z-[80] flex justify-center px-4 pt-4 sm:pt-6 transition-all duration-1000 pointer-events-none ${isScrolled ? "pt-2 sm:pt-3" : "pt-4 sm:pt-6"}`}
-      >
-        <nav
-          className={`flex items-center w-full max-w-5xl px-3 sm:px-6 py-2 sm:py-3 rounded-full border shadow-2xl backdrop-blur-2xl transition-all duration-1000 pointer-events-auto ${
-            theme === "dark"
-              ? "bg-slate-900/60 border-white/10 ring-1 ring-white/5 shadow-black/50"
-              : "bg-white/95 border-slate-300 ring-1 ring-slate-200/50 shadow-slate-300/40"
-          }`}
-        >
-          {/* Logo */}
-          <motion.button
-            onClick={scrollToTop}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="text-lg sm:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-green-500 cursor-pointer select-none shrink-0"
+      {/* header */}
+      <header className="sticky top-0 z-40 border-b border-line bg-surf/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToTop();
+            }}
+            className="group flex items-center gap-3"
+            aria-label="Back to top"
           >
-            SN.
-          </motion.button>
-
-          {/* Navigation Area - Horizontally Scrollable on Mobile */}
-          <div className="flex-1 mx-2 sm:mx-6 relative min-w-0">
-            {/* Visual fade indicators for scroll */}
-            <div
-              className={`absolute left-0 top-0 bottom-1 w-4 z-10 pointer-events-none md:hidden bg-gradient-to-r ${theme === "dark" ? "from-slate-900/60" : "from-white/90"} to-transparent`}
-            />
-            <div
-              className={`absolute right-0 top-0 bottom-1 w-4 z-10 pointer-events-none md:hidden bg-gradient-to-l ${theme === "dark" ? "from-slate-900/60" : "from-white/90"} to-transparent`}
-            />
-
-            <div className="overflow-x-auto scroll-smooth flex justify-start md:justify-center w-full custom-scrollbar pb-1">
-              <div
-                className={`flex items-center gap-4 sm:gap-8 px-4 whitespace-nowrap text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] ${theme === "dark" ? "text-slate-300" : "text-slate-800"}`}
-              >
-                {navLinks.map((link) => (
-                  <button
-                    key={link.id}
-                    onClick={() => scrollToSection(link.id)}
-                    className="hover:text-emerald-500 transition-all cursor-pointer py-2 relative group flex-shrink-0"
-                  >
-                    {link.name}
-                    <motion.span
-                      className="absolute bottom-1 left-0 w-0 h-0.5 bg-emerald-500 rounded-full"
-                      whileHover={{ width: "100%" }}
-                    />
-                  </button>
-                ))}
-              </div>
+            <Tile no="16" sym="S" />
+            <div className="flex flex-col">
+              <span className="font-headline text-base font-black tracking-tight text-hi transition-colors group-hover:text-g">
+                Sharann Nagarajan
+              </span>
+              <span className="font-mono text-[10px] text-mute">
+                SOFTWARE ENGINEER
+              </span>
             </div>
-          </div>
+          </a>
 
-          {/* Right Action Icons */}
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          <nav className="hidden items-center xl:flex" aria-label="Sections">
+            {NAV.map(navLink)}
+          </nav>
+
+          <div className="flex items-center gap-3">
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <a
-              href={`https://wa.me/${CONTACT_INFO.whatsapp.replace("+", "")}`}
-              target="_blank"
-              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white bg-gradient-to-r from-emerald-600 to-indigo-600 hover:shadow-lg hover:shadow-emerald-600/30 transition-all active:scale-95"
+              href={`tel:${CONTACT_INFO.phone}`}
+              className="hidden items-center gap-1.5 border border-g bg-g px-4 py-2 font-headline text-xs font-black uppercase tracking-wider text-fg shadow-[2px_2px_0px_#000] transition-all hover:bg-hovbg hover:text-hovfg sm:flex"
             >
-              Hire me
+              HIRE ME <ArrowUpRight size={14} strokeWidth={3} />
             </a>
+          </div>
+        </div>
+        <nav
+          className="custom-scrollbar border-t border-line xl:hidden"
+          aria-label="Sections"
+        >
+          <div className="custom-scrollbar mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 py-1.5 sm:px-6">
+            {NAV.map(navLink)}
           </div>
         </nav>
-      </div>
+      </header>
 
-      <section
-        id="hero"
-        className="relative min-h-screen flex flex-col items-center justify-center pt-32 px-6 overflow-hidden"
-      >
-        <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-8 items-center">
-          <motion.div
-            initial={{ x: -100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{
-              duration: 1.2,
-              ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-            }}
-            className="z-10 text-center md:text-left"
-          >
-            <p className="text-emerald-600 font-black tracking-[0.3em] uppercase mb-4 text-sm md:text-base">
-              Software Engineer
-            </p>
-            <h1 className="text-5xl md:text-6xl lg:text-8xl font-black mb-6 leading-[1.1]">
-              Sharann <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-500">
-                Nagarajan
-              </span>
-            </h1>
-            <p
-              className={`text-base md:text-xl max-w-lg mb-10 leading-relaxed mx-auto md:mx-0 font-medium ${theme === "dark" ? "text-slate-400" : "text-slate-800"}`}
-            >
-              Building high-performance Angular architectures and immersive 3D
-              worlds. I don't just write code; I craft logic into digital art.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 mb-10">
-              <a
-                href={`tel:${CONTACT_INFO.phone}`}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-xl shadow-emerald-600/30 transition-all active:scale-95"
-              >
-                <Phone size={18} /> Call Me
-              </a>
-              <a
-                href={`https://wa.me/${CONTACT_INFO.whatsapp.replace("+", "")}`}
-                target="_blank"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-xl shadow-emerald-600/30 transition-all active:scale-95"
-              >
-                <MessageCircle size={18} /> WhatsApp
-              </a>
-            </div>
-
-            <div className="flex items-center justify-center md:justify-start gap-4">
-              {[
-                { icon: <Linkedin size={22} />, href: CONTACT_INFO.linkedin },
-                {
-                  icon: <Mail size={22} />,
-                  href: `mailto:${CONTACT_INFO.email}`,
-                },
-              ].map((social, i) => (
-                <motion.a
-                  key={i}
-                  href={social.href}
-                  target="_blank"
-                  whileHover={{ y: -5, scale: 1.1 }}
-                  className={`p-4 rounded-2xl shadow-xl transition-all border ${theme === "dark" ? "bg-slate-800 border-slate-700 hover:text-emerald-500" : "bg-white border-slate-300 hover:bg-slate-50 text-slate-700 hover:text-emerald-600"}`}
-                >
-                  {social.icon}
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="relative h-[500px] md:h-[600px] lg:h-[750px] w-full flex items-center justify-center perspective-[2000px]"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.5, delay: 0.2 }}
-          >
-            {/* 3D Avatar Canvas */}
-            <div className="absolute inset-0 z-0 opacity-80">
-              <AvatarCanvas theme={theme} />
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <motion.section
-        id="stats"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-      >
-        <Stats theme={theme} />
-      </motion.section>
-
-      {/* Experience Section */}
-      <motion.section
-        id="experience"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className={`py-10 rounded-[64px] mx-4 transition-colors duration-1000 scroll-mt-24 ${theme === "dark" ? "bg-slate-900/10" : ""}`}
-      >
-        <ExperienceTimeline theme={theme} />
-      </motion.section>
-
-      {/* Skills Section */}
-      <motion.section
-        id="skills"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="scroll-mt-24"
-      >
+      <main className="relative z-10 pb-12 pt-0" role="main">
+        <Hero theme={theme} />
+        <Marquee />
+        <Stats />
+        <ExperienceTimeline />
+        <Projects />
         <Skills theme={theme} />
-      </motion.section>
+        <Certifications />
+        <ContactBanner />
+      </main>
 
-      {/* Projects Section */}
-      <motion.section
-        id="projects"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="scroll-mt-24"
-      >
-        <Projects theme={theme} />
-      </motion.section>
-
-      {/* Certifications Section */}
-      <motion.section
-        id="certifications"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="scroll-mt-24"
-      >
-        <Certifications theme={theme} />
-      </motion.section>
-
-      {/* Footer */}
-      <footer
-        className={`py-20 px-6 border-t transition-colors duration-1000 ${theme === "dark" ? "border-white/5 bg-black/20" : "border-slate-300 bg-slate-100"}`}
-      >
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-center md:text-left">
-            <h2
-              className={`text-3xl font-black mb-2 ${theme === "dark" ? "text-slate-200" : "text-slate-950"}`}
-            >
-              Sharann Nagarajan
-            </h2>
-            <p
-              className={`${theme === "dark" ? "text-slate-200" : "text-slate-700"} font-medium text-sm tracking-wide`}
-            >
-              Software Engineer.
-            </p>
+      <footer className="relative z-10 py-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-4 sm:px-6 md:flex-row md:items-center">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <span className="h-2 w-2 bg-g" />
+              <span className="font-headline text-sm font-bold text-hi">
+                SHARANN NAGARAJAN
+              </span>
+              <span className="text-mute">//</span>
+              <span className="text-g font-mono">SOFTWARE ENGINEER</span>
+            </div>
+            <div className="font-mono text-[11px] text-mute">
+              PHONE &amp; WA: +91 82489 47601 • EMAIL:{" "}
+              {CONTACT_INFO.email.toUpperCase()}
+            </div>
           </div>
-          <div className="flex flex-wrap justify-center gap-6">
-            <a
-              href={CONTACT_INFO.linkedin}
-              target="_blank"
-              className={`${theme === "dark" ? "text-slate-200" : "text-slate-600"} hover:text-emerald-500 transition-colors font-bold uppercase tracking-widest text-[10px]`}
-            >
-              LinkedIn
-            </a>
-            <a
-              href={`mailto:${CONTACT_INFO.email}`}
-              className={`${theme === "dark" ? "text-slate-200" : "text-slate-600"} hover:text-emerald-500 transition-colors font-bold uppercase tracking-widest text-[10px]`}
-            >
-              Email
-            </a>
+          <div className="flex flex-col gap-1 font-mono text-[11px] text-mute md:items-end">
+            <div>
+              © {new Date().getFullYear()} Sharann. All Rights Reserved.
+            </div>
+            <div className="text-g">BUILT WITH PASSION.</div>
           </div>
-        </div>
-        <div
-          className={`mt-20 pt-10 border-t  ${theme === "dark" ? "border-white/5" : "border-black/5"} text-slate-500 text-[10px] tracking-[0.3em] text-center`}
-        >
-          <p>© 2024 SHARANN NAGARAJAN • BUILT WITH PASSION</p>
         </div>
       </footer>
 
       <ChatBot theme={theme} />
 
-      {/* Scroll to Top */}
-      <AnimatePresence>
-        {window.scrollY > 300 && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.5, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: 20 }}
-            onClick={scrollToTop}
-            className={`fixed bottom-8 right-${CHATBOT_ENABLED ? "24" : "8"} p-4 rounded-2xl bg-emerald-600 text-white shadow-2xl z-[90] hover:bg-emerald-700 active:scale-95 transition-all`}
-          >
-            <ArrowUp size={24} />
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          height: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: ${theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)"};
-          border-radius: 20px;
-        }
-      `}</style>
+      <button
+        onClick={scrollToTop}
+        aria-label="Back to top"
+        className={`fixed bottom-6 z-[90] border border-g bg-g p-3 text-fg shadow-[2px_2px_0px_#000] transition-[transform,opacity] duration-150 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${CHATBOT_ENABLED ? "right-24" : "right-5"} ${showTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"}`}
+      >
+        <ArrowUp size={22} strokeWidth={2.5} />
+      </button>
     </div>
   );
 };

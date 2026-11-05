@@ -6,11 +6,13 @@ export interface Experience {
   points: string[];
   icon: string;
   iconBg: string;
+  location?: string;
+  tags?: string[];
 }
 
 export interface SkillCategory {
   title: string;
-  skills: { name: string; icon: string; icon_dark?: string }[];
+  skills: { name: string; icon: string; icon_dark?: string; hover?: string; featured?: boolean }[];
 }
 
 export interface Certification {
@@ -19,6 +21,14 @@ export interface Certification {
   date: string;
   description: string;
   color: string;
+  /** Official credential validation page. Omit until available (card shows LINK PENDING). */
+  url?: string;
+  /** Short credential id shown on the card. */
+  credentialId?: string;
+  /** Subtitle under the title (e.g. "Meta Professional Certification"). */
+  subtitle?: string;
+  /** Where the credential is verified (button label). */
+  verifyOn?: string;
 }
 
 export interface Stat {
@@ -26,6 +36,8 @@ export interface Stat {
   value: string;
   icon: any;
   color: string;
+  /** Supporting line under the number. */
+  desc?: string;
 }
 
 export interface Project {
@@ -33,4 +45,6 @@ export interface Project {
   description: string;
   icon: "MOBILE" | "WEB" | "BOTH";
   tags: { name: string; color: string }[];
+  /** Mock-style category chips, e.g. ["AIRLINES", "CORE"]. */
+  category?: string[];
 }

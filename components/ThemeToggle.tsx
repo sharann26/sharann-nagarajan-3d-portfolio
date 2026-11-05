@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-import { Moon, Sun } from "lucide-react";
 import React from "react";
 
 interface ThemeToggleProps {
@@ -7,28 +5,20 @@ interface ThemeToggleProps {
   toggleTheme: () => void;
 }
 
+/** LAB [DRK] / DESERT [LGT] segmented switch (kept from the previous build; restyled with code.md tokens). */
 const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme }) => {
+  const base = "flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider transition-colors";
+  const lab = theme === "dark";
   return (
-    <button
-      onClick={toggleTheme}
-      className={`relative p-2 w-16 h-9 rounded-full ${theme === "dark" ? "bg-slate-800" : "bg-slate-300"} transition-colors duration-1000 focus:outline-none`}
-      aria-label="Toggle Theme"
-    >
-      <motion.div
-        className={`absolute left-1 top-1 w-7 h-7 ${theme === "dark" ? "bg-emerald-600" : "bg-white"} rounded-full flex items-center justify-center shadow-md`}
-        animate={{
-          x: theme === "dark" ? 28 : 0,
-          rotate: theme === "dark" ? 360 : 0,
-        }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-      >
-        {theme === "dark" ? (
-          <Moon className="w-4 h-4 text-white" />
-        ) : (
-          <Sun className="w-4 h-4 text-amber-500" />
-        )}
-      </motion.div>
-    </button>
+    <div role="group" aria-label="Theme" className="flex border border-line bg-lowest p-0.5">
+      <button type="button" aria-pressed={lab} onClick={() => !lab && toggleTheme()} className={`${base} ${lab ? "bg-low text-g" : "text-mute hover:text-hi"}`}>
+        <span className={`inline-block h-1.5 w-1.5 ${lab ? "bg-g shadow-[0_0_8px_#00ff66]" : "bg-line2"}`} />
+        LAB<span className="hidden sm:inline"> [DRK]</span>
+      </button>
+      <button type="button" aria-pressed={!lab} onClick={() => lab && toggleTheme()} className={`${base} ${!lab ? "bg-a text-fg" : "text-mute hover:text-hi"}`}>
+        DESERT<span className="hidden sm:inline"> [LGT]</span>
+      </button>
+    </div>
   );
 };
 

@@ -1,73 +1,77 @@
-import { motion } from "framer-motion";
-import { Award } from "lucide-react";
+import { BadgeCheck, ExternalLink } from "lucide-react";
 import React from "react";
 import { CERTIFICATIONS } from "../constants";
+import { Depth } from "./ui/Depth";
+import { Reveal } from "./ui/Reveal";
+import { Section } from "./ui/Section";
 
-const Certifications: React.FC<{ theme: "dark" | "light" }> = ({ theme }) => {
-  return (
-    <section className="py-20 px-6 max-w-6xl mx-auto">
-      <div className="text-center mb-16">
-        <p
-          className={`text-sm uppercase tracking-widest ${theme === "dark" ? "text-slate-500" : "text-slate-600"} mb-2`}
-        >
-          Verified Excellence
-        </p>
-        <h2
-          className={`text-4xl font-extrabold ${theme === "dark" ? "text-white" : "text-slate-950"}`}
-        >
-          Certifications.
-        </h2>
-      </div>
+// accent per card from code.md: g a g c
+const ACC = [
+  { hover: "hover:border-g", txt: "text-g", title: "group-hover:text-g" },
+  { hover: "hover:border-a", txt: "text-a", title: "group-hover:text-a" },
+  { hover: "hover:border-g", txt: "text-g", title: "group-hover:text-g" },
+  { hover: "hover:border-c", txt: "text-c", title: "group-hover:text-c" },
+];
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {CERTIFICATIONS.map((cert, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{
-              rotateY: 10,
-              rotateX: -5,
-              z: 20,
-              boxShadow: "0 25px 50px -12px rgba(139, 92, 246, 0.25)",
-            }}
-            transition={{ type: "spring", stiffness: 300 }}
-            className={`group relative p-8 ${theme === "dark" ? "bg-slate-900/40 border border-white/10 shadow-none" : "bg-slate-50 border border-slate-300 shadow-xl shadow-slate-200/50"} backdrop-blur-md rounded-2xl overflow-hidden cursor-default perspective-1000`}
-          >
-            {/* Background Glow */}
-            <div
-              className={`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br ${cert.color} blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity`}
-            />
-
-            <div className="relative z-10">
-              <div
-                className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${cert.color} text-white mb-6 shadow-lg`}
-              >
-                <Award className="w-6 h-6" />
+const Certifications: React.FC = () => (
+  <Section
+    id="credentials"
+    no="58"
+    sym="Ce"
+    eyebrow="VERIFIED EXCELLENCE"
+    title="Certifications"
+    ghost="CERTIFIED"
+    band
+    right={<div className="font-mono text-xs text-mute">OFFICIAL COURSERA &amp; CREDLY DIRECT VERIFICATION REGISTRY</div>}
+  >
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {CERTIFICATIONS.map((c, i) => {
+        const a = ACC[i % ACC.length];
+        const body = (
+          <>
+            <div>
+              <div className="mb-4 flex items-center justify-between font-mono text-xs">
+                <span className={`font-bold ${a.txt}`}>
+                  {c.issuer.toUpperCase()} // {c.date}
+                </span>
+                <BadgeCheck size={18} className={a.txt} aria-label="verified" />
               </div>
-
-              <h3
-                className={`text-xl font-bold mb-2 group-hover:text-emerald-500 transition-colors ${theme === "dark" ? "text-white" : "text-slate-950"}`}
-              >
-                {cert.title}
-              </h3>
-              <p
-                className={`${theme === "dark" ? "text-slate-400" : "text-slate-700"} font-bold text-sm mb-4`}
-              >
-                {cert.issuer} • {cert.date}
-              </p>
-              <p
-                className={`text-sm font-medium ${theme === "dark" ? "text-slate-300" : "text-slate-700"} leading-relaxed`}
-              >
-                {cert.description}
-              </p>
+              <h3 className={`mb-2 font-headline text-lg font-bold text-hi transition-colors ${a.title}`}>{c.title}</h3>
+              <div className="mb-6 font-mono text-xs text-s4">
+                {c.subtitle}
+                <br />
+                <span className="text-mute">ID: {c.credentialId}</span>
+              </div>
             </div>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-};
+            <div className={`flex items-center justify-between border-t border-line pt-4 font-mono text-xs ${a.txt}`}>
+              Verify on {c.verifyOn}
+              <ExternalLink size={14} className="transition-transform group-hover:translate-x-1" />
+            </div>
+          </>
+        );
+        const cls = `lab-panel group flex h-full flex-col justify-between p-6 transition-all ${a.hover}`;
+        return (
+          <Depth key={c.title} amps={[0, i % 2 ? -18 : 18, i % 2 ? -24 : 24]}>
+            <Reveal delay={i % 2} className="h-full">
+              {c.url ? (
+                <a
+                  href={c.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${c.title}, certified by ${c.issuer}, ${c.date}. Opens the official validation page in a new tab.`}
+                  className={`${cls} cursor-pointer`}
+                >
+                  {body}
+                </a>
+              ) : (
+                <div className={cls}>{body}</div>
+              )}
+            </Reveal>
+          </Depth>
+        );
+      })}
+    </div>
+  </Section>
+);
 
 export default Certifications;

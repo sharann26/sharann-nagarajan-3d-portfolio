@@ -1,112 +1,72 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import React, { useRef } from "react";
+import React from "react";
 
 interface AvatarCanvasProps {
   theme: "dark" | "light";
+  /** hero scroll effect hooks (optional) */
+  imgRef?: React.Ref<HTMLImageElement>;
 }
 
-const AvatarCanvas: React.FC<AvatarCanvasProps> = ({ theme }) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Mouse position state
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  // Smooth spring animation for the tilt
-  const mouseX = useSpring(x, { stiffness: 150, damping: 15 });
-  const mouseY = useSpring(y, { stiffness: 150, damping: 15 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    // Calculate values from -0.5 to 0.5
-    const xPct = (e.clientX - rect.left) / width - 0.5;
-    const yPct = (e.clientY - rect.top) / height - 0.5;
-
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  // Transforms for 3D effect
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [10, -10]); // Inverted for natural feel
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-10, 10]);
-
-  // Parallax layers
-  const backgroundX = useTransform(mouseX, [-0.5, 0.5], [20, -20]);
-  const backgroundY = useTransform(mouseY, [-0.5, 0.5], [20, -20]);
-
-  // Dynamic gloss/reflection
-  const glossX = useTransform(mouseX, [-0.5, 0.5], [0, 100]);
-  const glossY = useTransform(mouseY, [-0.5, 0.5], [0, 100]);
-
+/** SPECIMEN panel from code.md. The portrait swaps with the active theme (dark/light asset). */
+const AvatarCanvas: React.FC<AvatarCanvasProps> = ({ theme, imgRef }) => {
   // Use a professional image with themed variants (you can replace these with actual image paths)
   const PROFILE_IMAGE = `images/profile-${theme}.png`;
 
+  const corner = "absolute h-3 w-3 border-g";
   return (
-    <div className="w-full h-full flex items-center justify-center p-4">
-      <motion.div
-        ref={ref}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d",
-        }}
-        className="relative w-full max-w-[400px] aspect-[3/4] rounded-[32px] cursor-none" // hidden cursor for immersion
-      >
-        {/* 1. Backdrop Glow / Shadow (Furthest back) */}
-        <motion.div
-          style={{
-            x: backgroundX,
-            y: backgroundY,
-            z: -50,
-            opacity: 0.6,
-          }}
-          className={`absolute -inset-10 rounded-full blur-[80px] transition-colors duration-1000 ${theme === "dark" ? "bg-emerald-600/40" : "bg-blue-400/40"}`}
-        />
-
-        {/* 2. Main Card Container */}
-        <div
-          className={`relative w-full h-full rounded-[32px] overflow-hidden border transition-colors duration-1000 ${theme === "dark" ? "bg-slate-900 border-white/10" : "bg-white border-slate-200"} shadow-2xl`}
-        >
-          {/* Image Layer */}
-          <div className="absolute inset-1 rounded-[28px] overflow-hidden">
-            <img
-              src={PROFILE_IMAGE}
-              alt="Sharann Nagarajan"
-              className="w-full h-full object-cover scale-110"
-            />
-
-            {/* Tech Overlay Gradient */}
-            <div
-              className={`absolute inset-0 mix-blend-overlay opacity-30 bg-gradient-to-t ${theme === "dark" ? "from-emerald-900 via-transparent to-teal-500" : "from-blue-900 via-transparent to-orange-400"}`}
-            />
-            <div className="absolute inset-0 bg-black/10" />
+    <div className="crosshair-corner relative">
+      <div className="lab-panel p-4 sm:p-5">
+        <div className="mb-4 flex items-center justify-between border-b border-line pb-3 font-mono text-xs">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 bg-g" />
+            <span className="font-bold tracking-wider text-hi">
+              SPECIMEN // SHARANN
+            </span>
           </div>
-
-          {/* 3. Gloss Reflection Overlay */}
-          <motion.div
-            style={{
-              background: useTransform(
-                [glossX, glossY],
-                ([latestX, latestY]) =>
-                  `radial-gradient(circle at ${latestX}% ${latestY}%, rgba(255,255,255,0.3) 0%, transparent 60%)`,
-              ),
-              zIndex: 70,
-            }}
-            className="absolute inset-0 pointer-events-none mix-blend-soft-light"
-          />
+          <span className="text-[10px] font-bold uppercase text-mute">
+            {theme === "dark" ? "LAB [DRK]" : "DESERT [LGT]"}
+          </span>
         </div>
-      </motion.div>
+
+        <div className="group relative overflow-hidden border border-line2 bg-lowest">
+          <img
+            ref={imgRef}
+            src={PROFILE_IMAGE}
+            alt="Portrait of Sharann - Software Architect"
+            className="hover-gray h-full w-full object-cover object-top contrast-[1.15] transition-all duration-700 group-hover:scale-105 group-hover:grayscale"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-lowest via-transparent to-transparent opacity-70"
+          />
+          <span
+            aria-hidden
+            className={`${corner} left-2 top-2 border-l-2 border-t-2`}
+          />
+          <span
+            aria-hidden
+            className={`${corner} right-2 top-2 border-r-2 border-t-2`}
+          />
+          <span
+            aria-hidden
+            className={`${corner} bottom-2 left-2 border-b-2 border-l-2`}
+          />
+          <span
+            aria-hidden
+            className={`${corner} bottom-2 right-2 border-b-2 border-r-2`}
+          />
+          <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between border border-line bg-surf/90 p-2.5 font-mono backdrop-blur-md">
+            <div>
+              <div className="font-headline text-xs font-bold tracking-wide text-hi">
+                Sharann Nagarajan
+              </div>
+              <div className="text-[10px] text-g">SDE 3 @ IQVIA</div>
+            </div>
+            <div className="text-[9px] font-bold uppercase tracking-wider text-a">
+              Chennai, India
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
