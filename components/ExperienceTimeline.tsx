@@ -40,8 +40,6 @@ const ACC = [
   },
 ];
 
-const range = (d: string) => d.replace(/\s-\s/, " � ").toUpperCase();
-
 /**
  * Left-line timeline (code.md). Parallax: a green fill draws down the line as you scroll,
  * and each node ignites (glow) the moment the fill reaches it.
@@ -153,7 +151,7 @@ const ExperienceTimeline: React.FC = () => {
                         className="flex gap-2.5 text-sm leading-relaxed text-s3"
                       >
                         <span className={`mt-0.5 font-bold ${a.bullet}`}>
-                          &bull;
+                          »
                         </span>
                         <span>{p}</span>
                       </li>
